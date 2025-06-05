@@ -11,11 +11,13 @@ use routes::{login_routes, routes};
 
 #[tokio::main]
 async fn main() {
+    let mc = ModelController::new();
     // let server = Server::default();
 
     let route_all = Router::new()
         .merge(routes())
         .merge(login_routes())
+        .nest("/api", web::ticket_routes::routes(mc.clone()))
         .layer(CookieManagerLayer::new());
 
     let addr = std::net::SocketAddr::from(([127, 0, 0, 1], 3000));

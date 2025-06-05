@@ -8,9 +8,7 @@ pub enum Error {
     LoginFail,
 
     // -- Model Errors
-    TicketDeleteFailedIdNotFound{
-        id: u64
-    },
+    TicketDeleteFailedIdNotFound { id: u64 },
 }
 
 impl IntoResponse for Error {

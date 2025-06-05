@@ -1,17 +1,19 @@
 use axum::Router;
 use tower_cookies::CookieManagerLayer;
 mod error;
+mod model;
 mod routes;
 mod server;
 mod web;
 
 pub use core::error::Error;
 
+use model::ModelController;
 use routes::{login_routes, routes};
 
 #[tokio::main]
-async fn main() {
-    let mc = ModelController::new();
+async fn main() -> Result<(), error::Error> {
+    let mc = ModelController::new().await?;
     // let server = Server::default();
 
     let route_all = Router::new()
@@ -27,4 +29,6 @@ async fn main() {
         .await
         .unwrap();
     println!("Server running at http://{}", addr);
+
+    Ok(())
 }

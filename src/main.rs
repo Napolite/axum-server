@@ -1,4 +1,4 @@
-use axum::Router;
+use axum::{middleware,Router};
 use tower_cookies::CookieManagerLayer;
 mod error;
 mod model;
@@ -15,11 +15,13 @@ use routes::{login_routes, routes};
 async fn main() -> Result<(), error::Error> {
     let mc = ModelController::new().await?;
     // let server = Server::default();
+    //
+    let api_routes = web::ticket_routes::routes(mc.clone()).route_layer(middleware::from_fn(web::mw_auth::mw_require_auth));
 
     let route_all = Router::new()
         .merge(routes())
         .merge(login_routes())
-        .nest("/api", web::ticket_routes::routes(mc.clone()))
+        .nest("/api",api_routes )
         .layer(CookieManagerLayer::new());
 
     let addr = std::net::SocketAddr::from(([127, 0, 0, 1], 3000));

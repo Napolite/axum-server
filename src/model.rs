@@ -21,12 +21,14 @@ pub struct ModelController {
 impl ModelController {
     pub async fn new() -> Result<Self> {
        Ok(Self {
-            tickets_store: Arc::default(),
+            tickets_store: Arc::new(Mutex::new(Vec::new())),
         })
     }
 
     pub async fn create_ticket(&self, ticket_fc: TicketForCrate) -> Result<Ticket> {
-        let mut store = self.tickets_store.lock().unwrap();
+
+        println!("this route was hit sha");
+        let mut store = self.tickets_store.lock().map_err(|_| Error::TicketCannotBeCreated)?;
         let id = store.len() as u64;
 
         let ticket = Ticket {
@@ -40,7 +42,7 @@ impl ModelController {
     }
 
     pub async fn list_tickets(&self) -> Result<Vec<Ticket>> {
-        let store = self.tickets_store.lock().unwrap();
+        let store = self.tickets_store.lock().map_err(|_| Error::TicketCannotBeCreated)?;
 
         let tickets = store.iter().filter_map(|t| t.clone()).collect();
 

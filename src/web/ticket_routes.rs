@@ -5,6 +5,7 @@ use axum::{
     extract::{FromRef, Json, Path, State},
     routing::{delete, get, post},
 };
+use std::io::{stdout, Write};
 
 #[derive(Clone, FromRef)]
 struct AppState {
@@ -15,13 +16,20 @@ async fn create_ticket(
     State(mc): State<ModelController>,
     Json(ticket_fc): Json<TicketForCrate>,
 ) -> Result<Json<Ticket>> {
+
+    println!("--> This route was hit completely");
     let ticket = mc.create_ticket(ticket_fc).await?;
+
+    println!("this route was hit");
 
     Ok(Json(ticket))
 }
 
 async fn list_tickets(State(mc): State<ModelController>) -> Result<Json<Vec<Ticket>>> {
     let tickets = mc.list_tickets().await?;
+
+    println!("this route was hit");
+    stdout().flush().unwrap();
 
     Ok(Json(tickets))
 }
